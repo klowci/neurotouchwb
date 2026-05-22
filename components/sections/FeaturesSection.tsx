@@ -7,7 +7,7 @@ const VIDEOS = [
   { id: "QtStLBMlyig", title: "Technical Execution" },
 ];
 
-const TAG_STYLE = "px-3 py-1 bg-[#FF7124]/15 border border-[#FF7124]/35 text-[#FF7124]/80 text-xs rounded-full";
+const TAG_STYLE = "px-4 py-1.5 bg-[#FF7124]/15 border border-[#FF7124]/35 text-[#FF7124]/80 text-xs rounded-full";
 
 export default function FeaturesSection() {
   return (

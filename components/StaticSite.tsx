@@ -181,7 +181,7 @@ export default function StaticSite() {
                 <div className="w-px h-4 bg-[#F4F1EC]/15 mx-2" />
                 {NAV_SECTIONS.slice(0, 6).map(n => (
                   <button key={n.id} onClick={() => scrollTo(n.id)}
-                    className="px-6 py-2.5 text-[#F4F1EC]/45 hover:text-[#FF7124] text-xs uppercase tracking-[0.18em]
+                    className="px-7 py-3 text-[#F4F1EC]/45 hover:text-[#FF7124] text-xs uppercase tracking-[0.18em]
                                transition-colors rounded-full hover:bg-[#162035] font-medium">
                     {n.label}
                   </button>

@@ -201,7 +201,7 @@ export default function Quiz({ onComplete, onSkip }: Props) {
             animate={{ opacity: 0.9, y: travelY, scale: 1 }}
             transition={{ duration: 0.82, ease: [0.4, 0, 0.6, 1] }}
             className="z-50 pointer-events-none select-none">
-            <span className="px-5 py-2 bg-[#FFE566]/20 border border-[#FFE566]/60 text-[#FFE566] text-sm font-bold rounded-full whitespace-nowrap shadow-[0_0_20px_rgba(255,229,102,0.4)]">
+            <span className="px-6 py-2.5 bg-[#FFE566]/20 border border-[#FFE566]/60 text-[#FFE566] text-sm font-bold rounded-full whitespace-nowrap shadow-[0_0_20px_rgba(255,229,102,0.4)]">
               {fw.word}
             </span>
           </motion.div>
@@ -226,7 +226,7 @@ export default function Quiz({ onComplete, onSkip }: Props) {
                       initial={{ opacity: 0, scale: 0.5 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                      className="px-5 py-2 bg-[#FFE566]/15 border border-[#FFE566]/40 text-[#FFE566] text-xs font-bold rounded-full">
+                      className="px-6 py-2.5 bg-[#FFE566]/15 border border-[#FFE566]/40 text-[#FFE566] text-xs font-bold rounded-full">
                       {word}
                     </motion.span>
                   ))}
@@ -268,7 +268,7 @@ function TransitionScreen({ words, onComplete }: { words: string[]; onComplete: 
                   initial={{ opacity: 0, y: 20, scale: 0.7 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ delay: i * 0.35, type: "spring", stiffness: 260, damping: 18 }}
-                  className="px-6 py-2.5 bg-[#FFE566]/15 border border-[#FFE566]/45 text-[#FFE566] font-bold text-base rounded-full">
+                  className="px-7 py-3 bg-[#FFE566]/15 border border-[#FFE566]/45 text-[#FFE566] font-bold text-base rounded-full">
                   {word}
                 </motion.span>
               ))}

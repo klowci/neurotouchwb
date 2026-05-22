@@ -152,7 +152,7 @@ export default function WordSearch() {
       {/* Flash message */}
       <div className="h-7 flex items-center justify-center">
         {flash && (
-          <div className={`px-5 py-1.5 rounded-full text-sm font-semibold border transition-all
+          <div className={`px-6 py-2 rounded-full text-sm font-semibold border transition-all
             ${flash.ok
               ? "bg-[#FF7124]/20 border-[#FF7124]/50 text-[#FF7124]"
               : "bg-[#F4F1EC]/8 border-[#F4F1EC]/15 text-[#F4F1EC]/50"}`}>

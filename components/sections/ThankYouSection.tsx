@@ -58,7 +58,7 @@ export default function ThankYouSection({ onFinish, onGoToGames }: { onFinish: (
         <p className="text-[#F4F1EC]/25 text-[10px] uppercase tracking-[0.28em]">Follow the journey</p>
         <div className="flex gap-3">
           <a href="https://www.youtube.com/@sonichub_nt" target="_blank" rel="noopener noreferrer"
-             className="flex items-center gap-2 px-5 py-2.5 bg-[#162035] border border-[#F4F1EC]/10 rounded-full
+             className="flex items-center gap-2 px-7 py-3 bg-[#162035] border border-[#F4F1EC]/10 rounded-full
                         text-sm text-[#F4F1EC]/65 hover:text-[#FF7124] hover:border-[#FF7124]/40 transition-all">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
               <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6a3 3 0 0 0-2.1 2.1C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8ZM9.5 15.6V8.4L15.8 12l-6.3 3.6Z"/>
@@ -66,7 +66,7 @@ export default function ThankYouSection({ onFinish, onGoToGames }: { onFinish: (
             @sonichub_nt
           </a>
           <a href="https://instagram.com/neurotouch.app" target="_blank" rel="noopener noreferrer"
-             className="flex items-center gap-2 px-5 py-2.5 bg-[#162035] border border-[#F4F1EC]/10 rounded-full
+             className="flex items-center gap-2 px-7 py-3 bg-[#162035] border border-[#F4F1EC]/10 rounded-full
                         text-sm text-[#F4F1EC]/65 hover:text-[#FF7124] hover:border-[#FF7124]/40 transition-all">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2.2c3.2 0 3.6 0 4.9.1 3.2.1 4.8 1.7 4.9 4.9.1 1.3.1 1.6.1 4.8s0 3.6-.1 4.9c-.1 3.2-1.7 4.8-4.9 4.9-1.3.1-1.6.1-4.9.1s-3.6 0-4.9-.1C3.9 21.7 2.3 20.1 2.2 16.9 2.1 15.6 2.1 15.3 2.1 12s0-3.6.1-4.9C2.3 3.9 3.9 2.3 7.1 2.2 8.4 2.2 8.7 2.2 12 2.2Zm0-2.2c-3.3 0-3.7 0-5 .1C2.7.3.3 2.7.1 7 0 8.3 0 8.7 0 12s0 3.7.1 5c.2 4.3 2.6 6.7 6.9 6.9 1.3.1 1.7.1 5 .1s3.7 0 5-.1c4.3-.2 6.7-2.6 6.9-6.9.1-1.3.1-1.7.1-5s0-3.7-.1-5C23.7 2.7 21.3.3 17 .1 15.7 0 15.3 0 12 0Zm0 5.8a6.2 6.2 0 1 0 0 12.4A6.2 6.2 0 0 0 12 5.8Zm0 10.2a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm6.4-11.8a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88Z"/>

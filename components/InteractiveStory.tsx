@@ -82,7 +82,7 @@ export default function InteractiveStory({ onSkip, onFinish, onGoToGames }: Prop
           <div className="hidden md:flex items-center gap-1.5">
             {STEPS.map((s, i) => (
               <button key={i} onClick={() => scrollTo(i)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-300
+                className={`px-5 py-2 rounded-full text-xs font-semibold transition-all duration-300
                   ${i === activeIdx
                     ? "bg-[#FF7124] text-white shadow-[0_0_18px_rgba(255,113,36,0.45)]"
                     : i < activeIdx

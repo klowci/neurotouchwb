@@ -53,7 +53,7 @@ export default function TeamSection() {
     <div className="flex flex-col gap-14">
 
       {/* Header */}
-      <div>
+      <div className="text-center">
         <p className="text-[#FF7124] text-xs uppercase tracking-[0.2em] font-semibold mb-2">Section 01</p>
         <h2 className="text-[#F4F1EC] text-3xl md:text-4xl font-black leading-tight">Meet the team</h2>
         <p className="text-[#F4F1EC]/45 text-sm mt-2 tracking-wide">5 students. 2 months. 1 mission.</p>

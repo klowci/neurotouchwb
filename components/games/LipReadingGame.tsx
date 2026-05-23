@@ -196,10 +196,10 @@ export default function LipReadingGame() {
   const [camError,    setCamError]    = useState<string | null>(null);
   const [loadMsg,     setLoadMsg]     = useState("Initialising…");
 
-  const videoRef      = useRef<HTMLVideoElement>(null);
-  const streamRef     = useRef<MediaStream | null>(null);
-  const faceMeshRef   = useRef<any>(null);
-  const cameraUtilRef = useRef<any>(null);
+  const videoRef    = useRef<HTMLVideoElement>(null);
+  const streamRef   = useRef<MediaStream | null>(null);
+  const faceMeshRef = useRef<any>(null);
+  const rafRef      = useRef<number | null>(null);
 
   // Mutable refs — callbacks always read fresh values without stale closures
   const targetRef    = useRef<Letter | null>(null);
@@ -230,8 +230,8 @@ export default function LipReadingGame() {
   }
 
   function stopCamera() {
-    try { cameraUtilRef.current?.stop?.(); } catch { /* ignore */ }
-    try { faceMeshRef.current?.close?.();  } catch { /* ignore */ }
+    if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
+    try { faceMeshRef.current?.close?.(); } catch { /* ignore */ }
     streamRef.current?.getTracks().forEach(t => t.stop());
     streamRef.current   = null;
     faceMeshRef.current = null;
@@ -249,7 +249,7 @@ export default function LipReadingGame() {
   }
 
   function initFaceMesh() {
-    const CDN = "https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619";
+    const CDN = "https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh";
     const fm  = new window.FaceMesh({ locateFile: (f: string) => `${CDN}/${f}` });
 
     fm.setOptions({
@@ -268,17 +268,18 @@ export default function LipReadingGame() {
 
     faceMeshRef.current = fm;
 
-    const cam = new window.Camera(videoRef.current!, {
-      onFrame: async () => {
-        if (faceMeshRef.current && videoRef.current) {
-          try { await faceMeshRef.current.send({ image: videoRef.current }); }
-          catch { /* ignore */ }
-        }
-      },
-      width: 320, height: 240,
-    });
-    cam.start();
-    cameraUtilRef.current = cam;
+    // Plain RAF loop — no camera_utils dependency needed
+    let lastMs = 0;
+    const loop = (now: number) => {
+      rafRef.current = requestAnimationFrame(loop);
+      if (now - lastMs < 80) return; // ~12 fps cap
+      lastMs = now;
+      const vid = videoRef.current;
+      if (faceMeshRef.current && vid && vid.readyState >= 2) {
+        faceMeshRef.current.send({ image: vid }).catch(() => { /* ignore */ });
+      }
+    };
+    rafRef.current = requestAnimationFrame(loop);
   }
 
   // ── Detection engine ──────────────────────────────────────────────────────
@@ -331,13 +332,10 @@ export default function LipReadingGame() {
 
     setLoadMsg("Loading face detection…");
     try {
-      const CDN = "https://cdn.jsdelivr.net/npm/@mediapipe";
-      await Promise.all([
-        loadScript(`${CDN}/face_mesh@0.4.1633559619/face_mesh.js`),
-        loadScript(`${CDN}/camera_utils@0.3.1632090989/camera_utils.js`),
-      ]);
+      await loadScript("https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js");
       initFaceMesh();
-    } catch {
+    } catch (err) {
+      console.error("MediaPipe load error:", err);
       setCamError("Failed to load face detection — check your internet.");
       stopCamera();
       setPhase("intro");

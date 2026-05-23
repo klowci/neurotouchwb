@@ -77,7 +77,7 @@ function classifyLandmarks(lms: any[]): Letter | null {
 
   const faceH = Math.abs(bot.y - top.y);
   const faceW = Math.abs(rt.x  - lt.x);
-  if (faceH < 0.08 || faceW < 0.08) return null; // face too far / not found
+  if (faceH < 0.04 || faceW < 0.04) return null; // face too far / not found
 
   const openRatio = Math.abs(ll.y - ul.y) / faceH;
   const wideRatio = Math.abs(rc.x - lc.x) / faceW;
@@ -230,7 +230,7 @@ export default function LipReadingGame() {
     setCamError(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: 320, height: 240 },
+        video: { facingMode: "user" },
       });
       streamRef.current = stream;
       if (videoRef.current) {
@@ -270,8 +270,8 @@ export default function LipReadingGame() {
     fm.setOptions({
       maxNumFaces:            1,
       refineLandmarks:        false,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence:  0.5,
+      minDetectionConfidence: 0.3,
+      minTrackingConfidence:  0.3,
     });
 
     fm.onResults((results: any) => {
@@ -285,6 +285,9 @@ export default function LipReadingGame() {
     // CRITICAL: wait for WASM model to fully download before sending frames
     await fm.initialize();
     faceMeshRef.current = fm;
+
+    // Short delay to let video stabilise before first frame
+    await new Promise(r => setTimeout(r, 500));
 
     // RAF loop with processing guard to prevent frame stacking
     let lastMs = 0;

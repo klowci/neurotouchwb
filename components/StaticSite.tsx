@@ -273,11 +273,11 @@ export default function StaticSite() {
               { id: "s-value",    comp: <ValueSection/>    },
               { id: "s-feedback", comp: <FeedbackSection/> },
             ].map(({ id, comp }) => (
-              <section key={id} id={id} className="px-8 sm:px-14 md:px-20 py-24 border-b border-[#F4F1EC]/6">
+              <section key={id} id={id} className="px-8 sm:px-14 md:px-20 xl:px-24 py-24 border-b border-[#F4F1EC]/6">
                 {comp}
               </section>
             ))}
-            <section id="s-thankyou" className="px-8 sm:px-14 md:px-20 pt-36 pb-24">
+            <section id="s-thankyou" className="px-8 sm:px-14 md:px-20 xl:px-24 pt-36 pb-24">
               <ThankYouSection
                 onFinish={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                 onGoToGames={goToGames}

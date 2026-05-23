@@ -116,7 +116,7 @@ export default function InteractiveStory({ onSkip, onFinish, onGoToGames }: Prop
       <div className="flex flex-1 overflow-hidden">
 
         {/* Vertical sidebar — always visible, never scrolls */}
-        <aside className="hidden lg:flex flex-col items-center py-10 bg-[#0E1621] border-r border-[#F4F1EC]/6 flex-shrink-0"
+        <aside className="hidden lg:flex flex-col items-center py-10 bg-[#0a1220] border-r border-[#FF7124]/15 flex-shrink-0"
                style={{ width: 88 }}>
           <div className="relative flex flex-col items-center flex-1 py-4 w-full">
             {/* track line */}
@@ -150,7 +150,7 @@ export default function InteractiveStory({ onSkip, onFinish, onGoToGames }: Prop
             return (
               <div key={i} id={SECTION_IDS[i]}
                 ref={el => { sectionRefs.current[i] = el; }}
-                className="min-h-screen pl-20 pr-10 md:pl-24 md:pr-16 lg:pl-28 lg:pr-20 py-20 flex flex-col justify-center
+                className="min-h-screen pl-24 pr-10 md:pl-28 md:pr-16 lg:pl-32 xl:pl-36 lg:pr-20 py-20 flex flex-col justify-center
                            border-b border-[#F4F1EC]/6 last:border-0 relative
                            transition-all duration-500"
                 style={{ opacity: sectionOpacity(i, activeIdx) }}>

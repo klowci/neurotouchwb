@@ -273,11 +273,11 @@ export default function StaticSite() {
               { id: "s-value",    comp: <ValueSection/>    },
               { id: "s-feedback", comp: <FeedbackSection/> },
             ].map(({ id, comp }) => (
-              <section key={id} id={id} className="px-8 sm:px-14 md:px-20 py-24 border-b border-[#F4F1EC]/6">
+              <section key={id} id={id} className="px-8 sm:px-14 md:px-20 xl:px-24 py-24 border-b border-[#F4F1EC]/6">
                 {comp}
               </section>
             ))}
-            <section id="s-thankyou" className="px-8 sm:px-14 md:px-20 pt-36 pb-24">
+            <section id="s-thankyou" className="px-8 sm:px-14 md:px-20 xl:px-24 pt-36 pb-24">
               <ThankYouSection
                 onFinish={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                 onGoToGames={goToGames}
@@ -287,8 +287,8 @@ export default function StaticSite() {
         )}
 
         {tab === "games" && (
-          <div className="px-8 sm:px-14 md:px-20 py-20 flex flex-col gap-16">
-            <div>
+          <div className="py-20 flex flex-col gap-16 items-center">
+            <div className="text-center">
               <p className="text-[#FF7124] text-xs uppercase tracking-[0.2em] font-semibold mb-3">Interactive</p>
               <h2 className="text-[#F4F1EC] text-3xl font-black">Games</h2>
               <p className="text-[#F4F1EC]/40 text-sm mt-2 leading-relaxed">
@@ -296,16 +296,15 @@ export default function StaticSite() {
               </p>
             </div>
 
-            <div className="border border-[#F4F1EC]/8 rounded-2xl p-10 md:p-14 bg-[#0a121d]">
-              <h3 className="text-[#F4F1EC] font-bold text-base mb-8">Word Search</h3>
+            <div className="w-full max-w-3xl border border-[#F4F1EC]/8 rounded-2xl p-10 md:p-14 bg-[#0a121d]">
               <WordSearch />
             </div>
 
-            <div className="border border-[#FF7124]/15 rounded-2xl p-10 md:p-14 bg-[#0a121d]">
+            <div className="w-full max-w-3xl border border-[#FF7124]/15 rounded-2xl p-10 md:p-14 bg-[#0a121d]">
               <GazeSimulator />
             </div>
 
-            <div className="border border-[#FF7124]/15 rounded-2xl p-10 md:p-14 bg-[#0a121d]">
+            <div className="w-full max-w-3xl border border-[#FF7124]/15 rounded-2xl p-10 md:p-14 bg-[#0a121d]">
               <LipReadingGame />
             </div>
           </div>

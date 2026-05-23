@@ -32,14 +32,18 @@ function sectionOpacity(i: number, activeIdx: number): number {
 export default function InteractiveStory({ onSkip, onFinish, onGoToGames }: Props) {
   const [activeIdx, setActiveIdx] = useState(0);
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const mainRef     = useRef<HTMLElement | null>(null);
 
+  // Root must be the scrollable <main> — not the viewport
   useEffect(() => {
+    const root = mainRef.current;
+    if (!root) return;
     const observers: IntersectionObserver[] = [];
     sectionRefs.current.forEach((el, i) => {
       if (!el) return;
       const obs = new IntersectionObserver(
         ([entry]) => { if (entry.isIntersecting) setActiveIdx(i); },
-        { threshold: 0.35 }
+        { root, rootMargin: "-30% 0px -55% 0px", threshold: 0 }
       );
       obs.observe(el);
       observers.push(obs);
@@ -82,7 +86,7 @@ export default function InteractiveStory({ onSkip, onFinish, onGoToGames }: Prop
           <div className="hidden md:flex items-center gap-1.5">
             {STEPS.map((s, i) => (
               <button key={i} onClick={() => scrollTo(i)}
-                className={`px-5 py-2 rounded-full text-xs font-semibold transition-all duration-300
+                className={`px-6 py-2.5 rounded-full text-xs font-semibold transition-all duration-300
                   ${i === activeIdx
                     ? "bg-[#FF7124] text-white shadow-[0_0_18px_rgba(255,113,36,0.45)]"
                     : i < activeIdx
@@ -138,13 +142,13 @@ export default function InteractiveStory({ onSkip, onFinish, onGoToGames }: Prop
         </aside>
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto">
+        <main ref={mainRef} className="flex-1 overflow-y-auto">
           {sections.map((sec, i) => {
             const isActive = i === activeIdx;
             return (
               <div key={i} id={SECTION_IDS[i]}
                 ref={el => { sectionRefs.current[i] = el; }}
-                className="min-h-screen px-10 md:px-16 lg:px-20 py-20 flex flex-col justify-center
+                className="min-h-screen pl-16 pr-10 md:pl-20 md:pr-16 lg:pl-24 lg:pr-20 py-20 flex flex-col justify-center
                            border-b border-[#F4F1EC]/6 last:border-0 relative
                            transition-all duration-500"
                 style={{ opacity: sectionOpacity(i, activeIdx) }}>

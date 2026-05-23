@@ -56,7 +56,7 @@ export default function StaticSite() {
           if (e.isIntersecting) setActiveSection(e.target.id);
         });
       },
-      { rootMargin: "-35% 0px -55% 0px", threshold: 0 }
+      { rootMargin: "-20% 0px -60% 0px", threshold: 0 }
     );
 
     NAV_SECTIONS.forEach(n => {

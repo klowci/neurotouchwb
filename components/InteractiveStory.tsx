@@ -39,6 +39,8 @@ export default function InteractiveStory({ onSkip, onFinish, onGoToGames }: Prop
     const el = mainRef.current;
     if (!el) return;
     const onScroll = () => {
+      const nearBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 80;
+      if (nearBottom) { setActiveIdx(STEPS.length - 1); return; }
       const trigger = el.scrollTop + el.clientHeight * 0.38;
       let best = 0;
       sectionRefs.current.forEach((sec, i) => {
@@ -66,7 +68,7 @@ export default function InteractiveStory({ onSkip, onFinish, onGoToGames }: Prop
   ];
 
   return (
-    <div className="min-h-screen bg-[#0E1621] flex flex-col">
+    <div className="h-screen bg-[#0E1621] flex flex-col overflow-hidden">
 
       {/* ── Top bar ── */}
       <header className="sticky top-0 z-50 bg-[#0E1621]/92 backdrop-blur-md border-b border-[#F4F1EC]/8">
@@ -111,10 +113,10 @@ export default function InteractiveStory({ onSkip, onFinish, onGoToGames }: Prop
       </header>
 
       {/* ── Layout ── */}
-      <div className="flex flex-1">
+      <div className="flex flex-1 overflow-hidden">
 
-        {/* Vertical sidebar */}
-        <aside className="hidden lg:flex w-22 flex-col items-center py-10 sticky top-[68px] self-start h-[calc(100vh-68px)] bg-[#0E1621] border-r border-[#F4F1EC]/6"
+        {/* Vertical sidebar — always visible, never scrolls */}
+        <aside className="hidden lg:flex flex-col items-center py-10 bg-[#0E1621] border-r border-[#F4F1EC]/6 flex-shrink-0"
                style={{ width: 88 }}>
           <div className="relative flex flex-col items-center flex-1 py-4 w-full">
             {/* track line */}

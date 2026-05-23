@@ -130,11 +130,12 @@ function HoldRing({
 // Camera pane
 // ─────────────────────────────────────────────────────────────────────────────
 function CamPane({
-  videoRef, detected, target,
+  videoRef, detected, faceDetected, target,
 }: {
-  videoRef: React.RefObject<HTMLVideoElement | null>;
-  detected: Letter | null;
-  target:   Letter | "";
+  videoRef:     React.RefObject<HTMLVideoElement | null>;
+  detected:     Letter | null;
+  faceDetected: boolean;
+  target:       Letter | "";
 }) {
   const isMatch = target !== "" && detected === target;
 
@@ -143,18 +144,29 @@ function CamPane({
       className="relative rounded-xl overflow-hidden bg-[#0a121d] flex-shrink-0 transition-all duration-200"
       style={{
         width:  240,
-        height: 180,
-        border: `1.5px solid ${isMatch ? "rgba(255,113,36,0.65)" : "rgba(244,241,236,0.08)"}`,
-        boxShadow: isMatch ? "0 0 20px rgba(255,113,36,0.15)" : "none",
+        height: 200,
+        border: `1.5px solid ${isMatch ? "rgba(255,113,36,0.7)" : faceDetected ? "rgba(255,113,36,0.3)" : "rgba(244,241,236,0.08)"}`,
+        boxShadow: isMatch ? "0 0 24px rgba(255,113,36,0.2)" : "none",
       }}>
 
       <video ref={videoRef} autoPlay playsInline muted
         className="w-full h-full object-cover scale-x-[-1]"/>
 
-      {/* Mouth-area guide oval */}
-      <div className="absolute inset-0 flex items-end justify-center pb-5 pointer-events-none">
-        <div className="w-[4.5rem] h-10 rounded-[50%] border transition-colors duration-300"
-          style={{ borderColor: isMatch ? "rgba(255,113,36,0.75)" : "rgba(255,113,36,0.2)" }}/>
+      {/* Face oval guide — shows user where to position their head */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ paddingBottom: 20 }}>
+        <div
+          className="rounded-[50%] border-2 transition-all duration-300"
+          style={{
+            width:       100,
+            height:      130,
+            borderColor: isMatch
+              ? "rgba(255,113,36,0.9)"
+              : faceDetected
+                ? "rgba(255,113,36,0.5)"
+                : "rgba(244,241,236,0.15)",
+            boxShadow: faceDetected ? `0 0 12px ${isMatch ? "rgba(255,113,36,0.4)" : "rgba(255,113,36,0.15)"}` : "none",
+          }}
+        />
       </div>
 
       {/* Live detection label */}
@@ -162,18 +174,20 @@ function CamPane({
         <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${
           isMatch
             ? "bg-[#FF7124]/40 text-[#FF7124]"
-            : detected
-              ? "bg-[#F4F1EC]/10 text-[#F4F1EC]/55"
-              : "bg-[#F4F1EC]/5 text-[#F4F1EC]/20"
+            : faceDetected && detected
+              ? "bg-[#F4F1EC]/12 text-[#F4F1EC]/70"
+              : faceDetected
+                ? "bg-[#FF7124]/10 text-[#FF7124]/60"
+                : "bg-[#F4F1EC]/5 text-[#F4F1EC]/25"
         }`}>
-          {detected ? `Sees: ${detected}` : "No face"}
+          {isMatch ? `✓ ${detected}` : detected ? `Sees: ${detected}` : faceDetected ? "Face found" : "No face — look at camera"}
         </span>
       </div>
 
       {/* Scanning line */}
       <div className="absolute left-0 right-0 h-px pointer-events-none"
         style={{
-          background: "linear-gradient(90deg,transparent,rgba(255,113,36,0.45),transparent)",
+          background: "linear-gradient(90deg,transparent,rgba(255,113,36,0.4),transparent)",
           animation:  "scanLine 1.4s ease-in-out infinite",
         }}/>
       <style>{`@keyframes scanLine{0%,100%{top:20%}50%{top:75%}}`}</style>
@@ -191,10 +205,11 @@ export default function LipReadingGame() {
   const [p1Idx,       setP1Idx]       = useState(0);
   const [wordIdx,     setWordIdx]     = useState(0);
   const [letterIdx,   setLetterIdx]   = useState(0);
-  const [holdPct,     setHoldPct]     = useState(0);
-  const [detected,    setDetected]    = useState<Letter | null>(null);
-  const [camError,    setCamError]    = useState<string | null>(null);
-  const [loadMsg,     setLoadMsg]     = useState("Initialising…");
+  const [holdPct,      setHoldPct]      = useState(0);
+  const [detected,     setDetected]     = useState<Letter | null>(null);
+  const [faceDetected, setFaceDetected] = useState(false);
+  const [camError,     setCamError]     = useState<string | null>(null);
+  const [loadMsg,      setLoadMsg]      = useState("Initialising…");
 
   const videoRef    = useRef<HTMLVideoElement>(null);
   const streamRef   = useRef<MediaStream | null>(null);
@@ -248,7 +263,7 @@ export default function LipReadingGame() {
     });
   }
 
-  function initFaceMesh() {
+  async function initFaceMesh(): Promise<void> {
     const CDN = "https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh";
     const fm  = new window.FaceMesh({ locateFile: (f: string) => `${CDN}/${f}` });
 
@@ -261,22 +276,29 @@ export default function LipReadingGame() {
 
     fm.onResults((results: any) => {
       const lms = results.multiFaceLandmarks?.[0] ?? null;
+      setFaceDetected(!!lms);
       const det = lms ? classifyLandmarks(lms) : null;
       setDetected(det);
       processDetection(det);
     });
 
+    // CRITICAL: wait for WASM model to fully download before sending frames
+    await fm.initialize();
     faceMeshRef.current = fm;
 
-    // Plain RAF loop — no camera_utils dependency needed
+    // RAF loop with processing guard to prevent frame stacking
     let lastMs = 0;
+    let busy   = false;
     const loop = (now: number) => {
       rafRef.current = requestAnimationFrame(loop);
-      if (now - lastMs < 80) return; // ~12 fps cap
+      if (now - lastMs < 100 || busy) return; // ~10 fps
       lastMs = now;
       const vid = videoRef.current;
       if (faceMeshRef.current && vid && vid.readyState >= 2) {
-        faceMeshRef.current.send({ image: vid }).catch(() => { /* ignore */ });
+        busy = true;
+        faceMeshRef.current.send({ image: vid })
+          .catch((e: unknown) => console.error("FaceMesh error:", e))
+          .finally(() => { busy = false; });
       }
     };
     rafRef.current = requestAnimationFrame(loop);
@@ -330,10 +352,11 @@ export default function LipReadingGame() {
     const ok = await startCamera();
     if (!ok) { setPhase("intro"); return; }
 
-    setLoadMsg("Loading face detection…");
     try {
+      setLoadMsg("Loading face-detection script…");
       await loadScript("https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js");
-      initFaceMesh();
+      setLoadMsg("Initialising model (~5 MB, one-time)…");
+      await initFaceMesh();
     } catch (err) {
       console.error("MediaPipe load error:", err);
       setCamError("Failed to load face detection — check your internet.");
@@ -428,7 +451,7 @@ export default function LipReadingGame() {
   function ActiveLayout({ label }: { label: string }) {
     return (
       <div className="flex flex-col md:flex-row gap-6 items-center justify-center w-full">
-        <CamPane videoRef={videoRef} detected={detected} target={currentTarget}/>
+        <CamPane videoRef={videoRef} detected={detected} faceDetected={faceDetected} target={currentTarget}/>
         <div className="flex flex-col items-center gap-4">
           <HoldRing pct={holdPct} target={currentTarget} confirmed={confirmed} detected={detected}/>
           <p className="text-[#F4F1EC]/45 text-xs text-center max-w-[150px] leading-relaxed">{label}</p>

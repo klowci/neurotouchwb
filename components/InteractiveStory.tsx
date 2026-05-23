@@ -34,21 +34,21 @@ export default function InteractiveStory({ onSkip, onFinish, onGoToGames }: Prop
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
   const mainRef     = useRef<HTMLElement | null>(null);
 
-  // Root must be the scrollable <main> — not the viewport
+  // Scroll-based spy — reliable inside overflow-y-auto containers
   useEffect(() => {
-    const root = mainRef.current;
-    if (!root) return;
-    const observers: IntersectionObserver[] = [];
-    sectionRefs.current.forEach((el, i) => {
-      if (!el) return;
-      const obs = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveIdx(i); },
-        { root, rootMargin: "-30% 0px -55% 0px", threshold: 0 }
-      );
-      obs.observe(el);
-      observers.push(obs);
-    });
-    return () => observers.forEach(o => o.disconnect());
+    const el = mainRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      const trigger = el.scrollTop + el.clientHeight * 0.38;
+      let best = 0;
+      sectionRefs.current.forEach((sec, i) => {
+        if (sec && sec.offsetTop <= trigger) best = i;
+      });
+      setActiveIdx(best);
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => el.removeEventListener("scroll", onScroll);
   }, []);
 
   function scrollTo(i: number) {
@@ -148,7 +148,7 @@ export default function InteractiveStory({ onSkip, onFinish, onGoToGames }: Prop
             return (
               <div key={i} id={SECTION_IDS[i]}
                 ref={el => { sectionRefs.current[i] = el; }}
-                className="min-h-screen pl-16 pr-10 md:pl-20 md:pr-16 lg:pl-24 lg:pr-20 py-20 flex flex-col justify-center
+                className="min-h-screen pl-20 pr-10 md:pl-24 md:pr-16 lg:pl-28 lg:pr-20 py-20 flex flex-col justify-center
                            border-b border-[#F4F1EC]/6 last:border-0 relative
                            transition-all duration-500"
                 style={{ opacity: sectionOpacity(i, activeIdx) }}>

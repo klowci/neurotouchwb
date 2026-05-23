@@ -264,7 +264,8 @@ export default function LipReadingGame() {
   }
 
   async function initFaceMesh(): Promise<void> {
-    const CDN = "https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh";
+    // Pinned version — avoids breaking changes from unpinned CDN
+    const CDN = "https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619";
     const fm  = new window.FaceMesh({ locateFile: (f: string) => `${CDN}/${f}` });
 
     fm.setOptions({
@@ -282,25 +283,33 @@ export default function LipReadingGame() {
       processDetection(det);
     });
 
-    // CRITICAL: wait for WASM model to fully download before sending frames
     await fm.initialize();
     faceMeshRef.current = fm;
 
-    // Short delay to let video stabilise before first frame
-    await new Promise(r => setTimeout(r, 500));
+    // Wait for video to have real pixel data before sending first frame
+    const vid = videoRef.current;
+    if (vid) {
+      await new Promise<void>(res => {
+        const check = () => {
+          if (vid.readyState >= 2 && vid.videoWidth > 0) { res(); return; }
+          setTimeout(check, 100);
+        };
+        check();
+      });
+    }
 
-    // RAF loop with processing guard to prevent frame stacking
+    // RAF loop ~10 fps with busy guard to prevent frame stacking
     let lastMs = 0;
     let busy   = false;
     const loop = (now: number) => {
       rafRef.current = requestAnimationFrame(loop);
-      if (now - lastMs < 100 || busy) return; // ~10 fps
+      if (now - lastMs < 100 || busy) return;
       lastMs = now;
-      const vid = videoRef.current;
-      if (faceMeshRef.current && vid && vid.readyState >= 2) {
+      const v = videoRef.current;
+      if (faceMeshRef.current && v && v.readyState >= 2 && v.videoWidth > 0) {
         busy = true;
-        faceMeshRef.current.send({ image: vid })
-          .catch((e: unknown) => console.error("FaceMesh error:", e))
+        faceMeshRef.current.send({ image: v })
+          .catch((e: unknown) => console.error("FaceMesh send error:", e))
           .finally(() => { busy = false; });
       }
     };
@@ -357,7 +366,7 @@ export default function LipReadingGame() {
 
     try {
       setLoadMsg("Loading face-detection script…");
-      await loadScript("https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js");
+      await loadScript("https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js");
       setLoadMsg("Initialising model (~5 MB, one-time)…");
       await initFaceMesh();
     } catch (err) {

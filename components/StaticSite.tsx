@@ -297,7 +297,6 @@ export default function StaticSite() {
             </div>
 
             <div className="w-full max-w-3xl border border-[#F4F1EC]/8 rounded-2xl p-10 md:p-14 bg-[#0a121d]">
-              <h3 className="text-[#F4F1EC] font-bold text-base mb-8 text-center">Word Search</h3>
               <WordSearch />
             </div>
 

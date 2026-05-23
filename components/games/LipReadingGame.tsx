@@ -43,8 +43,8 @@ const P1 = ["A", "M", "O", "S", "O", "M", "A", "S"] as const;
 // Practice 2: spell words
 const P2_WORDS = ["SAM", "MAS"] as const;
 
-// Final: type these words
-const FINAL_WORDS = ["SOMA", "MOMS", "MASS"] as const;
+// Final: type this word
+const FINAL_WORDS = ["SOMA"] as const;
 
 type Phase = "intro" | "lesson" | "p1" | "p2" | "final" | "done";
 type LessonStage = "teach" | "try" | "confirmed";
@@ -331,7 +331,7 @@ export default function LipReadingGame() {
           Learn 4 lip shapes used by NeuroTouch, practice them, then type real words — all without speaking.
           Your camera checks each shape in real time.
         </p>
-        <p className="text-[#F4F1EC]/30 text-xs mt-2">4 lessons · 2 practices · 3 words to type</p>
+        <p className="text-[#F4F1EC]/30 text-xs mt-2">4 lessons · 2 practices · 1 word to type</p>
       </div>
       {camError && <p className="text-red-400/70 text-xs max-w-xs">{camError}</p>}
       <button onClick={begin}
@@ -512,7 +512,7 @@ export default function LipReadingGame() {
       <div>
         <h3 className="text-[#FF7124] text-2xl font-bold">You learned the algorithm!</h3>
         <p className="text-[#F4F1EC]/50 text-sm mt-2 max-w-sm leading-relaxed">
-          4 shapes learned · 2 practices completed · 3 words typed — using only your lips.
+          4 shapes learned · 2 practices completed · 1 word typed — using only your lips.
           This is <strong className="text-[#F4F1EC]">exactly</strong> how the real NeuroTouch app works.
         </p>
       </div>
